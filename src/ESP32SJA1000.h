@@ -7,6 +7,7 @@
 #define ESP32_SJA1000_H
 
 #include "CANController.h"
+#include <vector>
 
 #define DEFAULT_CAN_RX_PIN GPIO_NUM_4
 #define DEFAULT_CAN_TX_PIN GPIO_NUM_5
@@ -35,6 +36,13 @@
 
 #define REG_CDR                    0x1F
 
+struct CanFrame {
+    int id;
+    int length;
+    std::vector<uint8_t> data;
+    // uint8_t data[MAX_MESSAGE_BYTES];
+};
+
 class ESP32SJA1000Class : public CANControllerClass {
 
 public:
@@ -49,7 +57,12 @@ public:
   virtual int parsePacket();
 
   virtual void onReceive(recieveCallback callback);
-
+  using CANControllerClass::available;
+  virtual int available();
+  using CANControllerClass::read;
+  virtual int read();
+  using CANControllerClass::peek;
+  virtual int peek();
   using CANControllerClass::filter;
   virtual int filter(int id, int mask);
   using CANControllerClass::filterExtended;
@@ -80,6 +93,9 @@ protected:
   gpio_num_t _txPin;
   bool _loopback;
   intr_handle_t _intrHandle;
+  QueueHandle_t _rxQueue;
+  CanFrame* _currentFrame;
+  int _currentFrameIndex;
 };
 
 extern ESP32SJA1000Class CAN;

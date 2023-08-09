@@ -26,6 +26,7 @@ int ESP32SJA1000Class::begin(long baudRate)
 {
   CANControllerClass::begin(baudRate);
 
+  _rxQueue = xQueueCreate(10, sizeof(CanFrame*)); 
   _loopback = false;
 
   DPORT_CLEAR_PERI_REG_MASK(DPORT_PERIP_RST_EN_REG, DPORT_CAN_RST);
@@ -226,7 +227,11 @@ int ESP32SJA1000Class::parsePacket()
       _rxData[i] = readRegister(dataReg + i);
     }
   }
-
+  CanFrame* frame = new CanFrame();
+  frame->id = _rxId;
+  frame->length = _rxLength;
+  frame->data.insert(frame->data.end(), &_rxData[1], &_rxData[length + 1]);
+  xQueueSend(_rxQueue, &frame, (TickType_t)0);
   // release RX buffer
   modifyRegister(REG_CMR, 0x04, 0x04);
 
@@ -390,6 +395,46 @@ void ESP32SJA1000Class::onInterrupt(void* arg)
 {
   ((ESP32SJA1000Class*)arg)->handleInterrupt();
 }
+
+int ESP32SJA1000Class::available()
+{
+  if (_currentFrame != nullptr){
+    if (_currentFrameIndex < _currentFrame->length)
+    {
+      return _currentFrame->length - _currentFrameIndex;
+    }
+    if (_currentFrameIndex == _currentFrame->length)
+    {
+      delete _currentFrame;
+      _currentFrame = nullptr;
+    }
+  } 
+  if (uxQueueMessagesWaiting(_rxQueue)) {
+    xQueueReceive(_rxQueue, &_currentFrame, (TickType_t)5)
+    _currentFrameIndex = 0;
+    return _currentFrame->length - _currentFrameIndex;
+  }
+  return 0;
+}
+
+int ESP32SJA1000Class::read()
+{
+  if (!available()) {
+    return -1;
+  }
+
+  return _currentFrame->data[_currentFrameIndex++];
+}
+
+int ESP32SJA1000Class::peek()
+{
+  if (!available()) {
+    return -1;
+  }
+
+  return _currentFrame->data[_currentFrameIndex];
+}
+
 
 ESP32SJA1000Class CAN;
 
