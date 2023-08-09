@@ -410,7 +410,7 @@ int ESP32SJA1000Class::available()
     }
   } 
   if (uxQueueMessagesWaiting(_rxQueue)) {
-    xQueueReceive(_rxQueue, &_currentFrame, (TickType_t)5)
+    xQueueReceive(_rxQueue, &_currentFrame, (TickType_t)5);
     _currentFrameIndex = 0;
     return _currentFrame->length - _currentFrameIndex;
   }
