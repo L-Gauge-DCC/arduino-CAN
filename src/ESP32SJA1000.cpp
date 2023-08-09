@@ -230,7 +230,7 @@ int ESP32SJA1000Class::parsePacket()
   CanFrame* frame = new CanFrame();
   frame->id = _rxId;
   frame->length = _rxLength;
-  frame->data.insert(frame->data.end(), &_rxData[1], &_rxData[length + 1]);
+  frame->data.insert(frame->data.end(), &_rxData[1], &_rxData[_rxLength + 1]);
   xQueueSend(_rxQueue, &frame, (TickType_t)0);
   // release RX buffer
   modifyRegister(REG_CMR, 0x04, 0x04);
