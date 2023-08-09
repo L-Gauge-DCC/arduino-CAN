@@ -398,6 +398,7 @@ void ESP32SJA1000Class::onInterrupt(void* arg)
 
 int ESP32SJA1000Class::available()
 {
+  log_i("Current Index : %d", _currentFrameIndex);
   if (_currentFrame != nullptr){
     if (_currentFrameIndex < _currentFrame->length)
     {
@@ -409,10 +410,13 @@ int ESP32SJA1000Class::available()
       _currentFrame = nullptr;
     }
   } 
+  log_i("Frames Waiting : %d", uxQueueMessagesWaiting(_rxQueue));
   if (uxQueueMessagesWaiting(_rxQueue)) {
-    xQueueReceive(_rxQueue, &_currentFrame, (TickType_t)5);
-    _currentFrameIndex = 0;
-    return _currentFrame->length - _currentFrameIndex;
+    if (_currentFrame == nullptr){
+      xQueueReceive(_rxQueue, &_currentFrame, (TickType_t)5);
+      _currentFrameIndex = 0;
+      return _currentFrame->length - _currentFrameIndex;
+    }
   }
   return 0;
 }
