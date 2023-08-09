@@ -230,7 +230,7 @@ int ESP32SJA1000Class::parsePacket()
   CanFrame* frame = new CanFrame();
   frame->id = _rxId;
   frame->length = _rxLength;
-  frame->data.insert(frame->data.end(), &_rxData[1], &_rxData[_rxLength + 1]);
+  frame->data.insert(frame->data.end(), &_rxData[0], &_rxData[_rxLength]);
   xQueueSend(_rxQueue, &frame, (TickType_t)0);
   // release RX buffer
   modifyRegister(REG_CMR, 0x04, 0x04);
@@ -398,7 +398,7 @@ void ESP32SJA1000Class::onInterrupt(void* arg)
 
 int ESP32SJA1000Class::available()
 {
-  log_i("Current Index : %d", _currentFrameIndex);
+  // log_i("Current Index : %d", _currentFrameIndex);
   if (_currentFrame != nullptr){
     if (_currentFrameIndex < _currentFrame->length)
     {
@@ -410,7 +410,7 @@ int ESP32SJA1000Class::available()
       _currentFrame = nullptr;
     }
   } 
-  log_i("Frames Waiting : %d", uxQueueMessagesWaiting(_rxQueue));
+  // log_i("Frames Waiting : %d", uxQueueMessagesWaiting(_rxQueue));
   if (uxQueueMessagesWaiting(_rxQueue)) {
     if (_currentFrame == nullptr){
       xQueueReceive(_rxQueue, &_currentFrame, (TickType_t)5);
