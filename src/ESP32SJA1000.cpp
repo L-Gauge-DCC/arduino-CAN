@@ -365,7 +365,7 @@ void ESP32SJA1000Class::handleInterrupt()
   if (ir & 0x40){
     // Arbitration lost, resend last packet
     
-    log_i("Arbitration Lost");
+    // log_i("Arbitration Lost");
     endPacket();
   }
 }
