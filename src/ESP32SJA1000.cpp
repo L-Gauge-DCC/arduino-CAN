@@ -14,7 +14,9 @@ ESP32SJA1000Class::ESP32SJA1000Class() :
   _rxPin(DEFAULT_CAN_RX_PIN),
   _txPin(DEFAULT_CAN_TX_PIN),
   _loopback(false),
-  _intrHandle(NULL)
+  _intrHandle(NULL),
+  _currentFrameIndex(0),
+  _currentFrame(nullptr)
 {
 }
 
