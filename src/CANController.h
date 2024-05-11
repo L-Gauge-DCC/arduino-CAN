@@ -38,6 +38,8 @@ public:
 
   virtual int filter(int id) { return filter(id, 0x7ff); }
   virtual int filter(int id, int mask);
+  virtual int filterMultiple(int id1, int id2) {return filterMultiple(id1, 0x7ff, id2, 0x7ff);}
+  virtual int filterMultiple(int id1, int mask1, int id2, int mask2);
   virtual int filterExtended(long id) { return filterExtended(id, 0x1fffffff); }
   virtual int filterExtended(long id, long mask);
 

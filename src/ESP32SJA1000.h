@@ -65,6 +65,8 @@ public:
   virtual int peek();
   using CANControllerClass::filter;
   virtual int filter(int id, int mask);
+  using CANControllerClass::filterMultiple;
+  virtual int filterMultiple(int id1, int mask1, int id2, int mask2);
   using CANControllerClass::filterExtended;
   virtual int filterExtended(long id, long mask);
 

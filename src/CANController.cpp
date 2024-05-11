@@ -190,6 +190,11 @@ int CANControllerClass::filter(int /*id*/, int /*mask*/)
   return 0;
 }
 
+int CANControllerClass::filterMultiple(int /*id1*/, int /*mask1*/, int /*id1*/, int /*mask1*/)
+{
+  return 0;
+}
+
 int CANControllerClass::filterExtended(long /*id*/, long /*mask*/)
 {
   return 0;
